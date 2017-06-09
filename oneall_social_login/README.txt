@@ -5,11 +5,11 @@
 4. Create a new OneAll site.
 5. Add your WHMCS domain name in the Settings \ Allowed Domains of your new site.
 6. Add the application subdomain, public key, and private key provided by OneAll to the addon settings under WHMCS Admin->Setup->Addon Modules.
-7. Update your template file login.tpl to add the following variable where you wish the options to appear: {$oneall_social_login}
+7. Update your template file login.tpl to add the following variable where you wish the options to appear: {$oneall_social_login_embedded}
 8. If you wish the log in options to appear on the order process you need to edit the viewcart.tpl file.  We suggest adding:
 
 {if !$loggedin}
-    {$oneall_social_login}<br />
+    {$oneall_social_login_embedded}<br />
 {/if}
 
 After:

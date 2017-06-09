@@ -17,7 +17,7 @@ function oneall_social_login_get_user_agent()
     global $CONFIG;
 
     // Compute versions
-    $social_login_version = '1.0';
+    $social_login_version = "1.0";
     $whmcs_version = $CONFIG['Version'];
 
     // Build Agent
@@ -499,7 +499,7 @@ function oneall_social_login_get_userid_by_token($token)
 function oneall_social_login_link_tokens_to_userid($userid, $user_token, $identity_token, $identity_provider)
 {
     // Delete wrongly linked tokens
-    $entries = Capsule::table('tbloneall_user_token')->select('id')->whereColumn([['userid', '=', intval($userid)], ['user_token', '<>', $user_token]])->get();
+    $entries = Capsule::table('tbloneall_user_token')->select('*')->where([['userid', '=', intval($userid)], ['user_token', '<>', $user_token]])->get();
     foreach ($entries as $entry)
     {
         // Delete the wrongly linked user_token.
