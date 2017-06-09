@@ -201,7 +201,11 @@ function oneall_social_login_icons_html($type = 'embedded')
         $output[] = "  var _oneall = _oneall || [];";
         $output[] = "  _oneall.push(['social_login', 'set_providers', ['" . implode("','", $settings['enabled_providers']) . "']]);";
         $output[] = "  _oneall.push(['social_login', 'set_callback_uri', window.location.href ]);";
-        $output[] = "  _oneall.push(['social_login', 'set_custom_css_uri', '" . $settings['custom_css_uri'] . "']);";
+
+        if ( ! empty ( $settings['custom_css_uri']))
+        {
+            $output[] = "  _oneall.push(['social_login', 'set_custom_css_uri', '" . $settings['custom_css_uri'] . "']);";
+        }
 
         // Popup
         if ($type == 'popup')

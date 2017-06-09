@@ -7,10 +7,25 @@ if (!defined("WHMCS"))
 // Database handler
 use WHMCS\Database\Capsule;
 
-
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 // API COMMUNICATION
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// ///////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// Returns the user agent
+function oneall_social_login_get_user_agent()
+{
+    global $CONFIG;
+
+    // Compute versions
+    $social_login_version = '1.0';
+    $whmcs_version = $CONFIG['Version'];
+
+    // Build Agent
+    $user_agent = 'SocialLogin/' . $social_login_version . ' WHMCS/' . $whmcs_version . ' (+http://www.oneall.com/)';
+
+    // Done
+    return $user_agent;
+}
 
 // Sends an API request by using the given handler
 function oneall_social_login_do_api_request($handler, $url, $opts = array (), $timeout = 25)
@@ -80,7 +95,7 @@ function oneall_social_login_fsockopen_request($url, $options = array (), $timeo
         // HTTP Headers
         $headers[] = "GET " . $url_protocol . $url . $path . " HTTP/1.0";
         $headers[] = "Host: " . $url . ":" . $port;
-        $headers[] = "User-Agent: SocialLogin/1.0 WHMCS/" . $CONFIG['Version'] . " (+http://www.oneall.com/)";
+        $headers[] = "User-Agent: " . oneall_social_login_get_user_agent();
 
         // Proxy Authentication
         if (!empty($options['proxy_username']) && !empty($options['proxy_password']))
@@ -157,7 +172,7 @@ function oneall_social_login_curl_request($url, $options = array (), $timeout = 
     curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
     curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, 0);
     curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, 0);
-    curl_setopt($curl, CURLOPT_USERAGENT, 'SocialLogin/1.0 WHMCS/' . $CONFIG['Version'] . ' (+http://www.oneall.com/)');
+    curl_setopt($curl, CURLOPT_USERAGENT, oneall_social_login_get_user_agent());
 
     // BASIC AUTH?
     if (isset($options['api_key']) and isset($options['api_secret']))
@@ -201,9 +216,9 @@ function oneall_social_login_curl_request($url, $options = array (), $timeout = 
     return $result;
 }
 
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 // URL TOOLS
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // Returns the current url
 function oneall_social_login_get_current_url()
@@ -268,21 +283,21 @@ function oneall_social_login_is_https_on()
     return false;
 }
 
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 // USER FUNCTIONS
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // Login the user
 function oneall_social_login_login_userid($userid, $ip_address)
 {
-   GLOBAL $cc_encryption_hash;
+    GLOBAL $cc_encryption_hash;
 
-   // Read user
-   $entry = Capsule::table('tblclients')->select('id', 'password')->where('id', '=', $userid)->first();
-   if (is_object ($entry) && isset ($entry->id))
-   {
+    // Read user
+    $entry = Capsule::table('tblclients')->select('id', 'password')->where('id', '=', $userid)->first();
+    if (is_object($entry) && isset($entry->id))
+    {
         // Start a session if none has been started yet
-        if(!session_id())
+        if (!session_id())
         {
             session_start();
         }
@@ -296,13 +311,13 @@ function oneall_social_login_login_userid($userid, $ip_address)
 
         // Success
         return true;
-   }
+    }
 
-   // Error
-   return false;
+    // Error
+    return false;
 }
 
-// Return the settings
+    // Return the settings
 function oneall_social_login_get_settings()
 {
     // Result
@@ -310,48 +325,39 @@ function oneall_social_login_get_settings()
         'enabled_providers' => array());
 
     // Read settings from database
-    try
+    $entries = Capsule::table('tbladdonmodules')->select('setting', 'value')->where('module', '=', 'oneall_social_login')->get();
+    foreach ($entries as $entry)
     {
-        $entries = Capsule::table('tbladdonmodules')->select('*')
-            ->where('module', '=', 'oneall_social_login')
-            ->get();
-
-        // Build settings
-        foreach ($entries as $entry)
+        if (preg_match('/^provider_(.+)$/', $entry->setting, $matches))
         {
-            if (preg_match('/^provider_(.+)$/', $entry->setting, $matches))
+            if (!empty($entry->value))
             {
-                if (!empty($entry->value))
-                {
-                    $settings['enabled_providers'][] = $matches[1];
-                }
-            }
-            else
-            {
-                // Check for full subdomain
-                if ($entry->setting == 'subdomain')
-                {
-                    // Full domain entered
-                    if (preg_match("/([a-z0-9\-]+)\.api\.oneall\.com/i", $entry->value, $matches))
-                    {
-                        $entry->value = $matches[1];
-                    }
-                }
-
-                // Add Setting
-                $settings[$entry->setting] = $entry->value;
+                $settings['enabled_providers'][] = $matches[1];
             }
         }
+        else
+        {
+            // Check for full subdomain
+            if ($entry->setting == 'subdomain')
+            {
+                // Full domain entered
+                if (preg_match("/([a-z0-9\-]+)\.api\.oneall\.com/i", $entry->value, $matches))
+                {
+                    $entry->value = $matches[1];
+                }
+            }
 
-        // Defaults
-        $settings['handler'] = ((!empty($settings['handler']) && $settings['handler'] == 'fsockopen') ? 'fsockopen' : 'curl');
-        $settings['port'] = ((!empty($settings['port']) && $settings['port'] == '80') ? '80' : '443');
-        $settings['api_use_https'] = ($settings['port'] == 80 ? false : true);
+            // Add Setting
+            $settings[$entry->setting] = $entry->value;
+        }
     }
-    // No settings found
-    catch (Exception $e)
-    {}
 
+    // Defaults
+    $settings['handler'] = ((!empty($settings['handler']) && $settings['handler'] == 'fsockopen') ? 'fsockopen' : 'curl');
+    $settings['port'] = ((!empty($settings['port']) && $settings['port'] == '80') ? '80' : '443');
+    $settings['api_use_https'] = ($settings['port'] == 80 ? false : true);
+
+    // Done
     return $settings;
 }
 
@@ -428,35 +434,32 @@ function oneall_social_login_get_all_providers()
 // Get the userid for a given email
 function oneall_social_login_get_userid_by_email($email)
 {
-    try
+    $userid = null;
+
+    // Read user
+    $entry = Capsule::table('tblclients')->select('id')->where('email', '=', trim(strval($email)))->first();
+    if (is_object($entry) && isset($entry->id))
     {
-        $entries = Capsule::table('tblclients')->select('id')
-            ->where('email', '=', strval(trim($email)))
-            ->first();
-        $userid = $entries->id;
-    }
-    // No settings found
-    catch (Exception $e)
-    {
-        $userid = null;
+        $userid = $entry->id;
     }
 
+    // Done
     return $userid;
 }
 
 // Get the username of the admin
 function oneall_social_login_get_admin_username()
 {
-    try
+    $username = null;
+
+    // Read zser
+    $entry = Capsule::table('tbladmins')->select('username')->where('roleid', '=', 1)->first();
+    if (is_object($entry) && isset($entry->username))
     {
-        $entries = Capsule::table('tbladmins')->select('username')->where('roleid', '=', 1)->first();
-        $username = $entries->username;
-    }
-    catch (Exception $e)
-    {
-        $username = null;
+        $username = $entry->username;
     }
 
+    // Done
     return $username;
 }
 
@@ -467,14 +470,14 @@ function oneall_social_login_get_userid_by_token($token)
 
     // Read userid for user_token
     $entry = Capsule::table('tbloneall_user_token')->select('id', 'userid')->where('user_token', '=', strval(trim($token)))->first();
-    if (is_object ($entry) && isset ($entry->id))
+    if (is_object($entry) && isset($entry->id))
     {
         // User Token
         $user_tokenid = $entry->id;
 
         // Make sure the user actually exists
         $entry = Capsule::table('tblclients')->select('id')->where('id', '=', $entry->userid)->first();
-        if (is_object ($entry) && isset ($entry->id))
+        if (is_object($entry) && isset($entry->id))
         {
             $userid = $entry->id;
         }
@@ -495,78 +498,50 @@ function oneall_social_login_get_userid_by_token($token)
 // Links the user/identity tokens to a userid
 function oneall_social_login_link_tokens_to_userid($userid, $user_token, $identity_token, $identity_provider)
 {
-    // Delete superfluous tokens
-    try
+    // Delete wrongly linked tokens
+    $entries = Capsule::table('tbloneall_user_token')->select('id')->whereColumn([['userid', '=', intval($userid)], ['user_token', '<>', $user_token]])->get();
+    foreach ($entries as $entry)
     {
-        // Read tokens
-        $entries = Capsule::table('tbloneall_user_token')->select('id')->whereColumn([
-            ['userid', '=', intval($userid)],
-            ['user_token', '<>', $user_token]]
-        )->get();
+        // Delete the wrongly linked user_token.
+        Capsule::table('tbloneall_user_token')->where('id', '=', $entry->id)->delete();
 
-        foreach ($entries as $entry)
-        {
-            // Delete the wrongly linked user_token.
-            Capsule::table('tbloneall_user_token')->where('id', '=', $entry->id)->delete();
-
-            // Delete the wrongly linked identity_token.
-            Capsule::table('tbloneall_identity_token')->where('user_tokenid', '=', $entry->id)->delete();
-        }
+        // Delete the wrongly linked identity_token.
+        Capsule::table('tbloneall_identity_token')->where('user_tokenid', '=', $entry->id)->delete();
     }
-    catch (Exception $e)
-    {}
 
     // Read the entry for the given user_token.
-    try
+    $entry = Capsule::table('tbloneall_user_token')->select('id')->where('user_token', '=', $user_token)->first();
+    if (is_object($entry) && isset($entry->id))
     {
-        $entry = Capsule::table('tbloneall_user_token')->select('id')
-            ->where('user_token', '=', $user_token)
-            ->first();
         $user_tokenid = $entry->id;
     }
-    catch (Exception $e)
+    else
     {
-        $user_tokenid = null;
-    }
-
-    // The user_token does not exist yet.
-    if (empty($user_tokenid))
-    {
-        $user_tokenid = Capsule::table('tbloneall_user_token')->insertGetId([
-            'userid' => $userid,
-            'user_token' => $user_token]);
+        $user_tokenid = Capsule::table('tbloneall_user_token')->insertGetId(['userid' => $userid, 'user_token' => $user_token]);
     }
 
     // Read the entry for the given identity_token.
-    try
+    $identity_tokenid = null;
+    $entry = Capsule::table('tbloneall_identity_token')->select('id', 'user_tokenid')->where('identity_token', '=', $identity_token)->first();
+    if (is_object($entry) && isset($entry->id))
     {
-        $entry = Capsule::table('tbloneall_identity_token')->select('id', 'user_tokenid')
-            ->where('identity_token', '=', $identity_token)
-            ->first();
-
-        // Delete the wrongly linked identity_token.
-        if ($entry->user_tokenid != $user_tokenid)
-        {
-            Capsule::table('tbloneall_identity_token')->where('id', '=', $entry->id)->delete();
-            $identity_tokenid = null;
-        }
-        else
+        // Token matches
+        if ($entry->user_tokenid == $user_tokenid)
         {
             $identity_tokenid = $entry->id;
         }
+        // Wrongly linked
+        else
+        {
+            Capsule::table('tbloneall_identity_token')->where('id', '=', $entry->id)->delete();
+        }
     }
-    catch (Exception $e)
-    {
-        $identity_tokenid = null;
-    }
+
 
     // The identity_token does not exist yet.
     if (empty($identity_tokenid))
     {
-        $identity_tokenid = Capsule::table('tbloneall_identity_token')->insertGetId([
-            'user_tokenid' => $user_tokenid,
-            'identity_token' => $identity_token,
-            'identity_provider' => $identity_provider]);
+        $identity_tokenid = Capsule::table('tbloneall_identity_token')->insertGetId(['user_tokenid' => $user_tokenid, 'identity_token' => $identity_token, 'identity_provider' => $identity_provider]);
     }
 
     // Done.
@@ -1039,17 +1014,17 @@ function oneall_social_login_generate_hash($length = 5, $case_sensitive = false)
 // Return the client IP used in $_SERVER
 function oneall_social_login_get_client_ip()
 {
-    if (isset ($_SERVER) && is_array ($_SERVER))
+    if (isset($_SERVER) && is_array($_SERVER))
     {
-        $keys = array ();
+        $keys = array();
         $keys[] = 'HTTP_X_REAL_IP';
         $keys[] = 'HTTP_X_FORWARDED_FOR';
         $keys[] = 'HTTP_CLIENT_IP';
         $keys[] = 'REMOTE_ADDR';
 
-        foreach ($keys AS $key)
+        foreach ($keys as $key)
         {
-            if (isset ($_SERVER[$key]))
+            if (isset($_SERVER[$key]))
             {
                 if (preg_match('/^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$/', $_SERVER[$key]) === 1)
                 {

@@ -23,26 +23,26 @@ function oneall_social_login_config()
 
     // Subdomain
     $configarray['fields']['subdomain'] = array(
-        "FriendlyName" => "API Subdomain",
+        "FriendlyName" => "OneAll API Subdomain",
         "Type" => "text",
         "Size" => "30",
-        "Description" => "API Subdomain name obtained from the Site settings in your OneAll account.",
+        "Description" => 'API Subdomain obtained from the Site settings in your <a href="https://app.oneall.com/" target="_blank"><strong>OneAll account</strong></a>.',
         "Default" => "");
 
     // Public Key
     $configarray['fields']['public_key'] = array(
-        "FriendlyName" => "API Public Key",
+        "FriendlyName" => "OneAll API Public Key",
         "Type" => "text",
         "Size" => "30",
-        "Description" => "API Public Key obtained from the Site settings in your OneAll account.",
+        "Description" => 'API Public Key obtained from the Site settings in your <a href="https://app.oneall.com/" target="_blank"><strong>OneAll account</strong></a>.',
         "Default" => "");
 
     // Private Key
     $configarray['fields']['private_key'] = array(
-        "FriendlyName" => "API Private Key",
+        "FriendlyName" => "OneAll API Private Key",
         "Type" => "text",
         "Size" => "30",
-        "Description" => "API Private Key obtained from the Site settings in your OneAll account.",
+        "Description" => 'API Private Key obtained from the Site settings in your <a href="https://app.oneall.com/" target="_blank"><strong>OneAll account</strong></a>.',
         "Default" => "");
 
     // Handler
@@ -74,7 +74,7 @@ function oneall_social_login_config()
         "FriendlyName" => "Popup Link Title",
         "Type" => "text",
         "Size" => "40",
-        "Description" => "Social Login link tile for popup display. Add {\$oneall_social_login_popup} to your template to display.",
+        "Description" => "Social Login link title for popup display. Add {\$oneall_social_login_popup} to your template to display.",
         "Default" => "Login using a social network");
 
     // Custom CSS Url
@@ -82,7 +82,7 @@ function oneall_social_login_config()
         "FriendlyName" => "Custom CSS URL",
         "Type" => "text",
         "Size" => "40",
-        "Description" => "URL to a custom CSS file to change the buttons. Requires a OneAll Standard plan.",
+        "Description" => 'URL to a custom CSS file to change the buttons. Requires a <a href="https://www.oneall.com/pricing-and-plans/" target="_blank"><strong>OneAll Starter</strong></a> plan.',
         "Default" => "");
 
     // Automatic Link
