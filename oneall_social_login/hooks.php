@@ -109,9 +109,10 @@ function oneall_social_login_callback()
                         // Login user
                         if (oneall_social_login_login_userid($userid, $user_ip_address))
                         {
-                            if (!empty($_GET['return_url']))
+                            // Prevent redirection to another website
+                            if (!empty($_GET['return_url']) && strpos ($_GET['return_url'], $CONFIG['SystemURL']) == 0)
                             {
-                                $redirect_to = $CONFIG['SystemURL'] . htmlentities($_GET['return_url']);
+                                $redirect_to = $_GET['return_url'];
                             }
                             else
                             {
@@ -120,6 +121,7 @@ function oneall_social_login_callback()
 
                             // Redirect
                             header("Location: " . $redirect_to);
+                            exit;
                         }
                     }
                 }
@@ -132,6 +134,8 @@ add_hook("ClientAreaPage", 1, "oneall_social_login_callback");
 // Builds the HTML code to embed the Social Login library
 function oneall_social_login_library_html()
 {
+    global $CONFIG;
+
     // HTML Contents
     $html = '';
 
@@ -139,21 +143,21 @@ function oneall_social_login_library_html()
     $settings = oneall_social_login_get_settings();
     if (!empty($settings['subdomain']))
     {
-        // Forge library path.
-        $library = ((oneall_social_login_is_https_on() ? 'https' : 'http') . '://' . $settings['subdomain'] . '.api.oneall.com/socialize/library.js');
+        // Providers
+        $providers = ((isset ($settings['enabled_providers']) && is_array ($settings['enabled_providers'])) ? $settings['enabled_providers'] : array ());
 
-        // JavaScript Method Reference: http://docs.oneall.com/api/javascript/library/methods/
+        // Subdomain
+        $subdomain = $settings['subdomain'];
+
+        // CSS
+        $custom_css = (isset ($settings['custom_css_uri']) ? trim ($settings['custom_css_uri']) : '');
+
+        // Build Output
         $output = array();
         $output[] = '';
-        $output[] = " <!-- OneAll.com / Social Login " . $settings['version'] . " for WHMCS -->";
-        $output[] = '<script data-cfasync="false" type="text/javascript">';
-        $output[] = " (function() {";
-        $output[] = "  var oa = document.createElement('script'); oa.type = 'text/javascript';";
-        $output[] = "  oa.async = true; oa.src = '" . $library . "';";
-        $output[] = "  var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(oa, s);";
-        $output[] = " })();";
-        $output[] = "</script>";
-        $output[] = '';
+        $output[] = "<!-- OneAll.com / Social Login " . $settings['version'] . " for WHMCS -->";
+        $output[] = '<script src="/modules/addons/oneall_social_login/assets/js/library.js"></script>';
+        $output[] = '<script type="text/javascript">var OneAll = new OneAll("' . $subdomain . '", ["' . implode('","', $providers) . '"], "'.$CONFIG['SystemURL'].'", "'.$custom_css.'");</script>';
 
         // Build HTML
         $html = implode("\n", $output);
@@ -164,68 +168,73 @@ function oneall_social_login_library_html()
 }
 add_hook("ClientAreaHeadOutput", 1, "oneall_social_login_library_html");
 
-// Builds the HTML code to display the Social Login icons
-function oneall_social_login_icons_html($type = 'embedded')
+// Builds the HTML code to embed the Social Login icons
+function oneall_social_login_icons_embedded ()
 {
     // HTML Contents
     $html = '';
 
-    // Read Settings
-    $settings = oneall_social_login_get_settings();
-    if (!empty($settings['subdomain']) && count($settings['enabled_providers']) > 0)
+    // Not displayed for logged in users
+    if (empty ($_SESSION['uid']))
     {
-        // Rand id for multiple occurences.
-        $containerid = 'oneall_social_login_providers_' . mt_rand(99999, 9999999);
+	    // Read Settings
+	    $settings = oneall_social_login_get_settings();
+	    if (!empty($settings['subdomain']))
+	    {
+	        // Title
+	        $title = (isset ($settings['embedded_title']) ? $settings['embedded_title'] : '');
+	        // HTML
+		    $output = array();
+		    $output[] = '';
+		    $output[] = " <!-- OneAll.com / Social Login " . $settings['version'] . " for WHMCS -->";
+		    $output[] = ' <script data-cfasync="false" type="text/javascript">';
+		    $output[] = '  (function() {';
+		    $output[] = "   OneAll.display_embedded (document.scripts[document.scripts.length - 1], '".$title."'); ";
+		    $output[] = "  })();";
+		    $output[] = " </script>";
 
-        // Build Social Login
-        $output = array();
-        $output[] = '';
-        $output[] = " <!-- OneAll.com / Social Login " . $settings['version'] . " for WHMCS -->";
-        $output[] = '<div class="oneall_social_login">';
-
-        // Popup
-        if ($type == 'popup')
-        {
-            $link_title = (!empty($settings['popup_link_title']) ? $settings['popup_link_title'] : 'Login using a social network');
-            $output[] = ' <a class="oneall_social_login_providers" id="' . $containerid . '">' . $link_title . '</div>';
-        }
-        // Embedded
-        else
-        {
-            $embedded_title = (!empty($settings['embedded_title']) ? $settings['embedded_title'] : '');
-            $output[] = ' <h4 class="oneall_social_login_caption">' . $embedded_title . '</h4>';
-            $output[] = ' <div class="oneall_social_login_providers" id="' . $containerid . '"></div>';
-        }
-
-        $output[] = ' <script data-cfasync="false" type="text/javascript">';
-        $output[] = "  var _oneall = _oneall || [];";
-        $output[] = "  _oneall.push(['social_login', 'set_providers', ['" . implode("','", $settings['enabled_providers']) . "']]);";
-        $output[] = "  _oneall.push(['social_login', 'set_callback_uri', window.location.href ]);";
-
-        if ( ! empty ( $settings['custom_css_uri']))
-        {
-            $output[] = "  _oneall.push(['social_login', 'set_custom_css_uri', '" . $settings['custom_css_uri'] . "']);";
-        }
-
-        // Popup
-        if ($type == 'popup')
-        {
-            $output[] = "  _oneall.push(['social_login', 'attach_onclick_popup_ui', '" . $containerid . "']);";
-        }
-        else
-        {
-            $output[] = "  _oneall.push(['social_login', 'do_render_ui', '" . $containerid . "']);";
-        }
-
-        $output[] = " </script>";
-        $output[] = '</div>';
-
-        // Build HTML
-        $html = implode("\n", $output);
+	        // Build HTML
+	        $html = implode("\n", $output);
+	    }
     }
 
     // Done
     return $html;
+}
+
+// Builds the HTML code to embed the Social Login popup
+function oneall_social_login_icons_popup ()
+{
+	// HTML Contents
+	$html = '';
+
+	// Not displayed for logged in users
+	if (empty ($_SESSION['uid']))
+	{
+		// Read Settings
+		$settings = oneall_social_login_get_settings();
+		if (!empty($settings['subdomain']))
+		{
+			// Title
+			$title = ((isset ($settings['popup_link_title']) && strlen (trim ($settings['embedded_title'])) > 0) ? trim ($settings['embedded_title']) : 'Login using a social network');
+
+			// HTML
+			$output = array();
+			$output[] = '';
+			$output[] = " <!-- OneAll.com / Social Login " . $settings['version'] . " for WHMCS -->";
+			$output[] = ' <script data-cfasync="false" type="text/javascript">';
+			$output[] = '  (function() {';
+			$output[] = "   OneAll.display_link (document.scripts[document.scripts.length - 1], '".$title."'); ";
+			$output[] = "  })();";
+			$output[] = " </script>";
+
+			// Build HTML
+			$html = implode("\n", $output);
+		}
+	}
+
+	// Done
+	return $html;
 }
 
 // Adds the shortcodes to display the Social Login icons
@@ -233,7 +242,7 @@ function oneall_social_login_shortcodes()
 {
     return array(
         'oneall_social_login_library' => oneall_social_login_library_html(),
-        'oneall_social_login_embedded' => oneall_social_login_icons_html('embedded'),
-        'oneall_social_login_popup' => oneall_social_login_icons_html('popup'));
+        'oneall_social_login_embedded' => oneall_social_login_icons_embedded(),
+        'oneall_social_login_popup' => oneall_social_login_icons_popup());
 }
 add_hook("ClientAreaPage", 1, "oneall_social_login_shortcodes");

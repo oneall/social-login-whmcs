@@ -317,7 +317,7 @@ function oneall_social_login_login_userid($userid, $ip_address)
     return false;
 }
 
-    // Return the settings
+// Return the settings
 function oneall_social_login_get_settings()
 {
     // Result
