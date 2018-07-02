@@ -302,9 +302,17 @@ function oneall_social_login_login_userid($userid, $ip_address)
             session_start();
         }
 
-        // Login data
-        $_SESSION['uid'] = $entry->id;
-        $_SESSION['upw'] = sha1($entry->id . $entry->password . $ip_address . substr(sha1($cc_encryption_hash), 0, 20));
+        // Add in more recent versions of WHMCS.
+        if (method_exists ('WHMCS\Authentication\Client', 'generateClientLoginHash'))
+        {
+             $_SESSION['uid'] = $entry->id;
+             $_SESSION['upw'] = WHMCS\Authentication\Client::generateClientLoginHash ($entry->id, '', $entry->password);
+        }
+        else
+        {
+            $_SESSION['uid'] = $entry->id;
+            $_SESSION['upw'] = sha1($entry->id . $entry->password . $ip_address . substr(sha1($cc_encryption_hash), 0, 20));
+        }
 
         // Persist
         session_write_close();
