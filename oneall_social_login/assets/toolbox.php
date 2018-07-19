@@ -17,7 +17,7 @@ function oneall_social_login_get_user_agent()
     global $CONFIG;
 
     // Compute versions
-    $social_login_version = "1.1.1";
+    $social_login_version = "1.1.2";
     $whmcs_version = $CONFIG['Version'];
 
     // Build Agent

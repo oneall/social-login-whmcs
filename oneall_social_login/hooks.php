@@ -152,11 +152,15 @@ function oneall_social_login_library_html()
         // CSS
         $custom_css = (isset ($settings['custom_css_uri']) ? trim ($settings['custom_css_uri']) : '');
 
+        // Base URL.
+        $base_url = ( ! empty ($CONFIG['SystemURL']) ? rtrim($CONFIG['SystemURL'],'/ ') : '');
+        $base_url = preg_replace('#^https?://#i', '//', $base_url);
+
         // Build Output
         $output = array();
         $output[] = '';
         $output[] = "<!-- OneAll.com / Social Login " . $settings['version'] . " for WHMCS -->";
-        $output[] = '<script src="/modules/addons/oneall_social_login/assets/js/library.js"></script>';
+        $output[] = '<script src="'.$base_url.'/modules/addons/oneall_social_login/assets/js/library.js"></script>';
         $output[] = '<script type="text/javascript">var OneAll = new OneAll("' . $subdomain . '", ["' . implode('","', $providers) . '"], "'.$CONFIG['SystemURL'].'", "'.$custom_css.'");</script>';
 
         // Build HTML
