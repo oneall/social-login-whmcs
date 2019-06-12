@@ -8,15 +8,15 @@ if (!defined("WHMCS"))
 use WHMCS\Database\Capsule;
 
 // Include Tools
-require_once (realpath(dirname(__FILE__)) . '/assets/toolbox.php');
+require_once realpath(dirname(__FILE__)) . '/assets/toolbox.php';
 
 // AddOn Configuration
 function oneall_social_login_config()
 {
     $configarray = array(
         "name" => "OneAll Social Login",
-        "description" => "Social Login for WHMCS allows your users to login and register with 30+ social networks (Facebook, Twitter, Google, Pinterest, LinkedIn ...). It increases your user registration rate by simplifying the registration process and provides permission-based social data retrieved from the social network profiles.",
-        "version" => "1.0",
+        "description" => "Social Login for WHMCS allows your users to login and register with 40+ social networks (Facebook, Twitter, Google, Pinterest, LinkedIn ...). It increases your user registration rate by simplifying the registration process and provides permission-based social data retrieved from the social network profiles.",
+        "version" => "1.2",
         "author" => "OneAll",
         "language" => "english",
         "fields" => array());
@@ -65,7 +65,7 @@ function oneall_social_login_config()
     $configarray['fields']['embedded_title'] = array(
         "FriendlyName" => "Embedded Title",
         "Type" => "text",
-         "Size" => "40",
+        "Size" => "40",
         "Description" => "Social Login caption for embedded display. Add {\$oneall_social_login_embedded} to your template to display.",
         "Default" => "Connect using a social network:");
 
@@ -107,6 +107,7 @@ function oneall_social_login_config()
     }
 
     // Done
+
     return $configarray;
 }
 
