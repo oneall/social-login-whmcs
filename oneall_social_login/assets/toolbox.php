@@ -17,18 +17,19 @@ function oneall_social_login_get_user_agent()
     global $CONFIG;
 
     // Compute versions
-    $social_login_version = "1.1.2";
+    $social_login_version = "1.2.0";
     $whmcs_version = $CONFIG['Version'];
 
     // Build Agent
     $user_agent = 'SocialLogin/' . $social_login_version . ' WHMCS/' . $whmcs_version . ' (+http://www.oneall.com/)';
 
     // Done
+
     return $user_agent;
 }
 
 // Sends an API request by using the given handler
-function oneall_social_login_do_api_request($handler, $url, $opts = array (), $timeout = 25)
+function oneall_social_login_do_api_request($handler, $url, $opts = array(), $timeout = 25)
 {
     // FSOCKOPEN
     if ($handler == 'fsockopen')
@@ -43,7 +44,7 @@ function oneall_social_login_do_api_request($handler, $url, $opts = array (), $t
 }
 
 // Sends an API request using FSOCKOPEN
-function oneall_social_login_fsockopen_request($url, $options = array (), $timeout = 15)
+function oneall_social_login_fsockopen_request($url, $options = array(), $timeout = 15)
 {
     global $CONFIG;
 
@@ -54,6 +55,7 @@ function oneall_social_login_fsockopen_request($url, $options = array (), $timeo
     if (($uri = parse_url($url)) === false)
     {
         $result->http_error = 'invalid_uri';
+
         return $result;
     }
 
@@ -89,6 +91,7 @@ function oneall_social_login_fsockopen_request($url, $options = array (), $timeo
         if (!$fp)
         {
             $result->http_error = trim($errstr);
+
             return $result;
         }
 
@@ -113,6 +116,7 @@ function oneall_social_login_fsockopen_request($url, $options = array (), $timeo
         if (!$fp)
         {
             $result->http_error = trim($errstr);
+
             return $result;
         }
 
@@ -141,22 +145,23 @@ function oneall_social_login_fsockopen_request($url, $options = array (), $timeo
     fclose($fp);
 
     // Parse response
-    list ($response_header, $response_body) = explode("\r\n\r\n", $response, 2);
+    list($response_header, $response_body) = explode("\r\n\r\n", $response, 2);
 
     // Parse header
     $response_header = preg_split("/\r\n|\n|\r/", $response_header);
-    list ($header_protocol, $header_code, $header_status_message) = explode(' ', trim(array_shift($response_header)), 3);
+    list($header_protocol, $header_code, $header_status_message) = explode(' ', trim(array_shift($response_header)), 3);
 
     // Build result
     $result->http_code = $header_code;
     $result->http_data = $response_body;
 
     // Done
+
     return $result;
 }
 
 // Sends a CURL request.
-function oneall_social_login_curl_request($url, $options = array (), $timeout = 15)
+function oneall_social_login_curl_request($url, $options = array(), $timeout = 15)
 {
     global $CONFIG;
 
@@ -213,6 +218,7 @@ function oneall_social_login_curl_request($url, $options = array (), $timeout = 
     }
 
     // Done
+
     return $result;
 }
 
@@ -250,6 +256,7 @@ function oneall_social_login_get_current_url()
     $current_url = $request_protocol . '://' . $request_host . (!empty($request_port) ? (':' . $request_port) : '') . $request_uri;
 
     // Done
+
     return $current_url;
 }
 
@@ -290,7 +297,7 @@ function oneall_social_login_is_https_on()
 // Login the user
 function oneall_social_login_login_userid($userid, $ip_address)
 {
-    GLOBAL $cc_encryption_hash;
+    global $cc_encryption_hash;
 
     // Read user
     $entry = Capsule::table('tblclients')->select('id', 'password')->where('id', '=', $userid)->first();
@@ -303,10 +310,10 @@ function oneall_social_login_login_userid($userid, $ip_address)
         }
 
         // Add in more recent versions of WHMCS.
-        if (method_exists ('WHMCS\Authentication\Client', 'generateClientLoginHash'))
+        if (method_exists('WHMCS\Authentication\Client', 'generateClientLoginHash'))
         {
-             $_SESSION['uid'] = $entry->id;
-             $_SESSION['upw'] = WHMCS\Authentication\Client::generateClientLoginHash ($entry->id, '', $entry->password);
+            $_SESSION['uid'] = $entry->id;
+            $_SESSION['upw'] = WHMCS\Authentication\Client::generateClientLoginHash($entry->id, '', $entry->password);
         }
         else
         {
@@ -318,10 +325,12 @@ function oneall_social_login_login_userid($userid, $ip_address)
         session_write_close();
 
         // Success
+
         return true;
     }
 
     // Error
+
     return false;
 }
 
@@ -366,6 +375,7 @@ function oneall_social_login_get_settings()
     $settings['api_use_https'] = ($settings['port'] == 80 ? false : true);
 
     // Done
+
     return $settings;
 }
 
@@ -379,6 +389,8 @@ function oneall_social_login_get_all_providers()
             'name' => 'Battle.net'),
         'blogger' => array(
             'name' => 'Blogger'),
+        'discord' => array(
+            'name' => 'Discord'),
         'disqus' => array(
             'name' => 'Disqus'),
         'dribbble' => array(
@@ -395,6 +407,8 @@ function oneall_social_login_get_all_providers()
             'enabled_default' => 1),
         'instagram' => array(
             'name' => 'Instagram'),
+        'line' => array(
+            'name' => 'Line'),
         'linkedin' => array(
             'name' => 'LinkedIn',
             'enabled_default' => 1),
@@ -402,6 +416,10 @@ function oneall_social_login_get_all_providers()
             'name' => 'LiveJournal'),
         'mailru' => array(
             'name' => 'Mail.ru'),
+        'meetup' => array(
+            'name' => 'Meetup'),
+        'mixer' => array(
+            'name' => 'Mixer'),
         'odnoklassniki' => array(
             'name' => 'Odnoklassniki'),
         'openid' => array(
@@ -420,6 +438,10 @@ function oneall_social_login_get_all_providers()
             'name' => 'StackExchange'),
         'steam' => array(
             'name' => 'Steam'),
+        'soundCloud' => array(
+            'name' => 'SoundCloud'),
+        'tumblr' => array(
+            'name' => 'Tumblr'),
         'twitch' => array(
             'name' => 'Twitch.tv'),
         'twitter' => array(
@@ -429,10 +451,14 @@ function oneall_social_login_get_all_providers()
             'name' => 'Vimeo'),
         'vkontakte' => array(
             'name' => 'VKontakte'),
+        'weibo' => array(
+            'name' => 'Weibo'),
         'windowslive' => array(
             'name' => 'Windows Live'),
         'wordpress' => array(
             'name' => 'WordPress.com'),
+        'xing' => array(
+            'name' => 'Xing'),
         'yahoo' => array(
             'name' => 'Yahoo'),
         'youtube' => array(
@@ -452,6 +478,7 @@ function oneall_social_login_get_userid_by_email($email)
     }
 
     // Done
+
     return $userid;
 }
 
@@ -468,6 +495,7 @@ function oneall_social_login_get_admin_username()
     }
 
     // Done
+
     return $username;
 }
 
@@ -500,6 +528,7 @@ function oneall_social_login_get_userid_by_token($token)
     }
 
     // Done
+
     return $userid;
 }
 
@@ -507,8 +536,8 @@ function oneall_social_login_get_userid_by_token($token)
 function oneall_social_login_link_tokens_to_userid($userid, $user_token, $identity_token, $identity_provider)
 {
     // Delete wrongly linked tokens
-	$entries = Capsule::table('tbloneall_user_token')->select('id')->where('userid', '=', intval($userid))->where ('user_token', '<>', $user_token)->get();
-	foreach ($entries as $entry)
+    $entries = Capsule::table('tbloneall_user_token')->select('id')->where('userid', '=', intval($userid))->where('user_token', '<>', $user_token)->get();
+    foreach ($entries as $entry)
     {
         // Delete the wrongly linked user_token.
         Capsule::table('tbloneall_user_token')->where('id', '=', $entry->id)->delete();
@@ -545,7 +574,6 @@ function oneall_social_login_link_tokens_to_userid($userid, $user_token, $identi
         }
     }
 
-
     // The identity_token does not exist yet.
     if (empty($identity_tokenid))
     {
@@ -553,6 +581,7 @@ function oneall_social_login_link_tokens_to_userid($userid, $user_token, $identi
     }
 
     // Done.
+
     return array(
         $user_tokenid,
         $identity_tokenid);
@@ -965,6 +994,7 @@ function oneall_social_login_extract_social_network_profile($result)
                 }
             }
         }
+
         return $data;
     }
 
@@ -1000,8 +1030,7 @@ function oneall_social_login_generate_hash_char($case_sensitive = false)
     do
     {
         $char = chr(mt_rand(48, 122));
-    }
-    while (!preg_match('/[' . $regexp . ']/', $char));
+    } while (!preg_match('/[' . $regexp . ']/', $char));
 
     return $char;
 }

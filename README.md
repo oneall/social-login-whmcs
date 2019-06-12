@@ -1,8 +1,8 @@
 ## Available Versions
-* **Social Login for WHMCS 7.0, 7.1, 7.2, 7.3, 7.4, 7.5**
+* **Social Login for WHMCS 7.0+**
 
-# Social Login 1.1.2 for WHMCS 7.0+
-Social Login for WHMCS allows your users to login and register with 30+ social networks. 
+# Social Login 1.2.0 for WHMCS 7.0+
+Social Login for WHMCS allows your users to login and register with 40+ social networks. 
 It increases your WHMCS user registration rate by simplifying the registration process for 
 new users and provides permission-based social data retrieved from the social network profiles.
 
@@ -14,29 +14,40 @@ http://docs.oneall.com/plugins/guide/social-login-whmcs/
 * Amazon
 * Battle.net
 * Blogger
+* Discord
 * Disqus
 * Draugiem
+* Dribbble
 * Facebook
-* Foursquare
+* Foursquare 
 * Github.com
 * Google
 * Instagram
+* Line
 * LinkedIn
 * LiveJournal
 * Mail.ru
+* Meetup
+* Mixer
 * Odnoklassniki
 * OpenID
 * PayPal
+* Pinterest
+* PixelPin
 * Reddit
 * Skyrock.com
+* SoundCloud
 * StackExchange
 * Steam
+* Tumblr
 * Twitch.tv
 * Twitter
 * Vimeo
 * VKontakte
+* Weibo
 * Windows Live
 * WordPress.com
+* Xing
 * Yahoo
 * YouTube
 
