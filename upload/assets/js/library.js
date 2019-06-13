@@ -2,7 +2,13 @@ function OneAll (subdomain, providers, homepage, custom_css) {
     this.subdomain = subdomain;
     this.providers = providers;
     this.homepage = homepage;
+    
     this.callback_uri = ((this.homepage + (this.homepage.split('?')[1] ? '&amp;': '?')) + "return_url=" + encodeURIComponent(window.location.href));
+
+    // index page fix : ie index.php?rp=/knowledgebase will crash with return_url param. We keep the page uri and add return url
+    this.callback_uri = this.homepage.split('?rp=/')[1] ? this.homepage.split('?rp=/')[0] + '?return_url='+encodeURIComponent(window.location.href) : this.callback_uri ;
+
+
     this.custom_css = custom_css;
     this.library_added = false;
 }
