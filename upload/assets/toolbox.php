@@ -17,7 +17,7 @@ function oneall_social_login_get_user_agent()
     global $CONFIG;
 
     // Compute versions
-    $social_login_version = "1.2.0";
+    $social_login_version = "1.3.0";
     $whmcs_version = $CONFIG['Version'];
 
     // Build Agent
@@ -385,6 +385,8 @@ function oneall_social_login_get_all_providers()
     return array(
         'amazon' => array(
             'name' => 'Amazon'),
+        'apple' => array(
+            'name' => 'Apple'),
         'battlenet' => array(
             'name' => 'Battle.net'),
         'blogger' => array(
