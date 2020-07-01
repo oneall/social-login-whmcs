@@ -300,7 +300,7 @@ function oneall_social_login_login_userid($userid, $ip_address)
     global $cc_encryption_hash;
 
     // Read user
-    $entry = Capsule::table('tblclients')->select('id', 'password')->where('id', '=', $userid)->first();
+    $entry = Capsule::table('tblclients')->select('id', 'password', 'email')->where('id', '=', $userid)->first();
     if (is_object($entry) && isset($entry->id))
     {
         // Start a session if none has been started yet
@@ -313,7 +313,7 @@ function oneall_social_login_login_userid($userid, $ip_address)
         if (method_exists('WHMCS\Authentication\Client', 'generateClientLoginHash'))
         {
             $_SESSION['uid'] = $entry->id;
-            $_SESSION['upw'] = WHMCS\Authentication\Client::generateClientLoginHash($entry->id, '', $entry->password);
+            $_SESSION['upw'] = WHMCS\Authentication\Client::generateClientLoginHash($entry->id, '', $entry->password, $entry->email);
         }
         else
         {
