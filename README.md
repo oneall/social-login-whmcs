@@ -10,6 +10,11 @@ new users and provides permission-based social data retrieved from the social ne
 ## Installation guide
 http://docs.oneall.com/plugins/guide/social-login-whmcs/
 
+
+## Official WHMCS plugin
+https://marketplace.whmcs.com/product/3479-social-login
+
+
 ## Supported Social Networks
 * Amazon
 * Apple
@@ -51,6 +56,7 @@ http://docs.oneall.com/plugins/guide/social-login-whmcs/
 * Xing
 * Yahoo
 * YouTube
+
 
 ## About Us
 Social Login is maintained by [OneAll](http://www.oneall.com/). OneAll, a technology company offering a set of 
