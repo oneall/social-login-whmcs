@@ -59,7 +59,7 @@ https://marketplace.whmcs.com/product/3479-social-login
 
 
 ## About Us
-Social Login is maintained by [OneAll](http://www.oneall.com/). OneAll, a technology company offering a set of 
+[Social Login](https://www.oneall.com/services/social-network-integration/social-login/) is maintained by [OneAll](https://www.oneall.com/). OneAll, a technology company offering a set of 
 web-delivered tools and services for establishing and optimizing a site's connection with social networks.
 
 **Fork us on Github!**
