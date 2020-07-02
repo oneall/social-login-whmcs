@@ -8,7 +8,7 @@ new users and provides permission-based social data retrieved from the social ne
 
 
 ## Installation guide
-http://docs.oneall.com/plugins/guide/social-login-whmcs/
+https://docs.oneall.com/plugins/guide/social-login-whmcs/
 
 
 ## Official WHMCS plugin
