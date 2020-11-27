@@ -16,7 +16,7 @@ function oneall_social_login_config()
     $configarray = array(
         "name" => "OneAll Social Login",
         "description" => "Social Login for WHMCS allows your users to login and register with 40+ social networks (Facebook, Twitter, Google, Pinterest, LinkedIn ...). It increases your user registration rate by simplifying the registration process and provides permission-based social data retrieved from the social network profiles.",
-        "version" => "1.2",
+        "version" => "1.4.0",
         "author" => "OneAll",
         "language" => "english",
         "fields" => array());

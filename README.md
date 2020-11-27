@@ -1,7 +1,7 @@
 ## Available Versions
 * **Social Login for WHMCS 7.0+**
 
-# Social Login 1.3.0 for WHMCS 7.0+
+# Social Login 1.4.0 for WHMCS 7.0+
 Social Login for WHMCS allows your users to login and register with 40+ social networks. 
 It increases your WHMCS user registration rate by simplifying the registration process for 
 new users and provides permission-based social data retrieved from the social network profiles.
@@ -38,6 +38,7 @@ https://marketplace.whmcs.com/product/3479-social-login
 * Odnoklassniki
 * OpenID
 * PayPal
+* Patreon
 * Pinterest
 * PixelPin
 * Reddit
