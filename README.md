@@ -1,5 +1,6 @@
 ## Available Versions
 * **Social Login for WHMCS 7.0+**
+* [Social Login for WHMCS 8.0+](https://github.com/oneall/social-login-whmcs/tree/whmcs/8.0+)
 
 # Social Login 1.4.0 for WHMCS 7.0+
 Social Login for WHMCS allows your users to login and register with 40+ social networks. 
