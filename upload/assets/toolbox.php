@@ -17,7 +17,7 @@ function oneall_social_login_get_user_agent()
     global $CONFIG;
 
     // Compute versions
-    $social_login_version = "1.4.0";
+    $social_login_version = "2.0.0";
     $whmcs_version = $CONFIG['Version'];
 
     // Build Agent
@@ -295,38 +295,25 @@ function oneall_social_login_is_https_on()
 // ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // Login the user
-function oneall_social_login_login_userid($userid, $ip_address)
+function oneall_social_login_login_userid($userid, $ip_address, $redirect_to = 'clientarea.php')
 {
     global $cc_encryption_hash;
 
     // Read user
-    $entry = Capsule::table('tblclients')->select('id', 'password', 'email')->where('id', '=', $userid)->first();
+    $entry = Capsule::table('tblusers')->select('id', 'password', 'email')->where('id', '=', $userid)->first();
     if (is_object($entry) && isset($entry->id))
     {
-        // Start a session if none has been started yet
-        if (!session_id())
-        {
-            session_start();
-        }
+        // Get an access token to log user
+        $command = 'CreateSsoToken';
+        $postData = array(
+            'client_id' => $entry->id,
+            'destination' => 'sso:custom_redirect',
+            'sso_redirect_path' => $redirect_to
+        );
 
-        // Add in more recent versions of WHMCS.
-        if (method_exists('WHMCS\Authentication\Client', 'generateClientLoginHash'))
-        {
-            $_SESSION['uid'] = $entry->id;
-            $_SESSION['upw'] = WHMCS\Authentication\Client::generateClientLoginHash($entry->id, '', $entry->password, $entry->email);
-        }
-        else
-        {
-            $_SESSION['uid'] = $entry->id;
-            $_SESSION['upw'] = sha1($entry->id . $entry->password . $ip_address . substr(sha1($cc_encryption_hash), 0, 20));
-        }
+        $results = localAPI($command, $postData);
 
-        // Persist
-        session_write_close();
-
-        // Success
-
-        return true;
+        return !empty($results['redirect_url']) ? $results['redirect_url'] : null;
     }
 
     // Error
@@ -399,6 +386,8 @@ function oneall_social_login_get_all_providers()
             'name' => 'Draugiem'),
         'dribbble' => array(
             'name' => 'Dribbble'),
+        'epicgames' => array(
+            'name' => 'Epic Games'),
         'facebook' => array(
             'name' => 'Facebook',
             'enabled_default' => 1),
@@ -444,8 +433,12 @@ function oneall_social_login_get_all_providers()
             'name' => 'StackExchange'),
         'steam' => array(
             'name' => 'Steam'),
+        'strava' => array(
+            'name' => 'Strava'),
         'soundCloud' => array(
             'name' => 'SoundCloud'),
+        'spotify' => array(
+            'name' => 'Spotify'),
         'tumblr' => array(
             'name' => 'Tumblr'),
         'twitch' => array(
@@ -467,6 +460,8 @@ function oneall_social_login_get_all_providers()
             'name' => 'Xing'),
         'yahoo' => array(
             'name' => 'Yahoo'),
+        'yandex' => array(
+            'name' => 'Yandex'),
         'youtube' => array(
             'name' => 'YouTube'));
 }

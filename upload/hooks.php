@@ -106,21 +106,22 @@ function oneall_social_login_callback()
                         // Read USER IP
                         $user_ip_address = oneall_social_login_get_client_ip();
 
-                        // Login user
-                        if (oneall_social_login_login_userid($userid, $user_ip_address))
+                        // Prevent redirection to another website
+                        if (!empty($_GET['return_url']) && strpos($_GET['return_url'], $CONFIG['SystemURL']) == 0)
                         {
-                            // Prevent redirection to another website
-                            if (!empty($_GET['return_url']) && strpos($_GET['return_url'], $CONFIG['SystemURL']) == 0)
-                            {
-                                $redirect_to = $_GET['return_url'];
-                            }
-                            else
-                            {
-                                $redirect_to = rtrim($CONFIG['SystemURL'], ' /') . '/clientarea.php';
-                            }
+                            // relative path
+                            $redirect_to = str_replace($CONFIG['SystemURL'], '', $_GET['return_url']);
+                        }
+                        else
+                        {
+                            $redirect_to = 'clientarea.php';
+                        }
 
+                        // Login user
+                        if ($sso_redirect = oneall_social_login_login_userid($userid, $user_ip_address, $redirect_to))
+                        {
                             // Redirect
-                            header("Location: " . $redirect_to);
+                            header("Location: " . $sso_redirect);
                             exit;
                         }
                     }
