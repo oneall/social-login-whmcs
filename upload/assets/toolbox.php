@@ -294,6 +294,27 @@ function oneall_social_login_is_https_on()
 // USER FUNCTIONS
 // ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+// Create a random email
+function oneall_social_login_create_rand_email()
+{
+    $email = '';
+    do
+    {
+        $email = md5(uniqid(rand(1000, 9000))) . "@example.com";
+    } while (oneall_social_login_email_exists($email));
+
+    return $email;
+}
+
+// Check if email already exists
+function oneall_social_login_email_exists($email)
+{
+    // Read user
+    $entry = Capsule::table('tblusers')->select('id', 'password', 'email')->where('email', '=', $email)->first();
+
+    return (is_object($entry) && isset($entry->id));
+}
+
 // Login the user
 function oneall_social_login_login_userid($userid, $ip_address, $redirect_to = 'clientarea.php')
 {

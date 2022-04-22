@@ -82,6 +82,7 @@ function oneall_social_login_callback()
                         }
                         else
                         {
+                            $client_data['email'] = oneall_social_login_create_rand_email();
                             // Pass as true to skip sending welcome email.
                             $client_data['noemail'] = true;
                         }
