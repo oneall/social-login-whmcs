@@ -1,0 +1,37 @@
+{
+  "schema": "1.0",
+  "type": "whmcs-addons",
+  "name": "oneall_social_login",
+  "license": "proprietary",
+  "category": "signin",
+  "description": {
+    "name": "OneAll Social Login",
+    "tagline": "Allows your users to login and register with 40+ social networks",
+    "long": "Social Login allows your users to comment, login and register with 40+ social networks like Twitter, Facebook, LinkedIn, Instagram, Вконтакте, Google or Yahoo.",
+    "features": [
+      "40+ Social Networks",
+      "Data Protection Guarantee",
+      "Professionally developed",
+      "Seamless Integration",
+      "Eliminates Spam and Bot Registrations",
+      "Data Export",
+      "Maintenance Free"
+    ]
+  },
+  "logo": {
+    "filename": "logo.png"
+  },
+  "support": {
+    "homepage": "https://app.oneall.com/open-support-ticket/",
+    "docs_url": "http://docs.oneall.com/plugins/guide/social-login-whmcs/"
+  },
+  "authors": [
+    {
+      "name": "OneAll",
+      "homepage": "https:\/\/www.oneall.com\/"
+    }
+  ],
+  "keywords": [
+    "signin", "social", "login", "networks"
+  ]
+}
